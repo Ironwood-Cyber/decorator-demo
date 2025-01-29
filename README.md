@@ -66,7 +66,7 @@ The backend gateway API should now be running on local port `8080`.
 
 # Modifying the gateway service configuration file to add or remove decorators
 
-TODO
+Below is the gateway service configuration file found at `src/backend/gateway-service/appsettings.json`. Under the `DllHandlerConfig.DecoratorServiceDlls` field, each decorator library DLL is listed along with an execution order on how to process the event handling logic. Some decorator libraries do not have event handling logic, which is why some are marked as `None`. The below config contains a list entry for all the decorator libraries, but the entries can be removed / added back to the config during runtime to modify the data presented on the frontend:
 
 ```json
 {
@@ -100,6 +100,31 @@ TODO
   }
 }
 ```
+
+For example, the configuration below will only use the base library and the decorator 1 library:
+
+```json
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "System.Net.Http.HttpClient": "Warning"
+    }
+  },
+  "DllHandlerConfig": {
+    "BaseServiceDll": "../base-service/bin/Debug/net8.0/base-service.dll",
+    "DecoratorServiceDlls": [
+      {
+        "ServiceDll": "../decorator-service-2/bin/Debug/net8.0/decorator-service-2.dll",
+        "ExecutionOrder": "None"
+      }
+    ]
+  }
+}
+```
+
+The `ServiceDll` field is a relative path to the specific DLL relative to the `src/backend/gateway-service` directory.
 
 # Roadmap
 

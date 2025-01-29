@@ -1,0 +1,18 @@
+{
+  "type": "VerticalLayout",
+  "elements": [
+    {
+      "type": "Group",
+      "label": "Input Group 1",
+      "$id": 100,
+      "elements": [
+        {
+          "type": "Control",
+          "scope": "#/properties/firstNumber",
+          "label": "Multiply by 10",
+          "$id": 120
+        }
+      ]
+    }
+  ]
+}

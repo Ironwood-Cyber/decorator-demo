@@ -1,0 +1,10 @@
+{
+    "recommendations": [
+        "csharpier.csharpier-vscode",
+        "ms-azuretools.vscode-docker",
+        "ms-dotnettools.csdevkit",
+        "ms-dotnettools.csharp",
+        "ms-dotnettools.vscodeintellicode-csharp",
+        "esbenp.prettier-vscode"
+    ]
+}

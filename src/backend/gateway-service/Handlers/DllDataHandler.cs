@@ -26,7 +26,6 @@ public class DllDataHandler : IDataHandler
         _dllConfig = configuration.Value;
 
         List<DecoratorServiceDllDefinition> decoratorDlls = _dllConfig.DecoratorServiceDlls;
-        _logger.LogInformation("Decorator Dlls: {Dlls}", string.Join(", ", decoratorDlls.Select(dll => dll.ServiceDll)));
 
         // Add a Type for the base service class
         Assembly baseAssembly = Assembly.LoadFrom(_dllConfig.BaseServiceDll);

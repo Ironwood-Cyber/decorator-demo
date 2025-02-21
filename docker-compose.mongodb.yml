@@ -1,0 +1,21 @@
+version: "3.9"
+name: mongo
+
+services:
+  mongodb:
+    image: mongo:jammy
+    container_name: mongo
+    # environment:
+    #   MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-r00t}
+    #   MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-r00tp455w0rd!}
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodbdata:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      timeout: 5s
+      retries: 20
+
+volumes:
+  mongodbdata:

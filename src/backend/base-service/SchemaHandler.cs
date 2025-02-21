@@ -1,19 +1,48 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Shared;
 
 namespace BaseService;
+
+public class BaseData
+{
+    [JsonIgnore]
+    public ObjectId Id { get; set; }
+
+    public string JsonData { get; set; } = string.Empty;
+}
 
 /// <summary>
 /// Handles reading the various JsonForms schema files as well as the event handling
 /// </summary>
 public class SchemaHandler : ISchemaHandler, IEventHandler
 {
+    private readonly IMongoCollection<BaseData> _database;
+
+    public SchemaHandler()
+    {
+        string mongoUri = "mongodb://localhost:27017";
+        _database = new MongoClient(mongoUri).GetDatabase("test").GetCollection<BaseData>(nameof(BaseData));
+    }
+
     /// <inheritdoc/>
-    public async Task<string> GetDataAsStringAsync() => await GetFileAsStringAsync(Path.Combine(GetPath, Constants.Files.Data));
+    public async Task<string> GetDataAsStringAsync()
+    {
+        var documents = await _database.Find(_ => true).Project<BaseData>(Builders<BaseData>.Projection.Exclude("_id")).ToListAsync();
+        var data = documents.FirstOrDefault();
+        if (data is not null)
+        {
+            return data.JsonData;
+        }
+        return await GetFileAsStringAsync(Path.Combine(GetPath, Constants.Files.Data));
+    }
 
     /// <inheritdoc/>
     public async Task<string> GetSchemaAsStringAsync() => await GetFileAsStringAsync(Path.Combine(GetPath, Constants.Files.Schema));
@@ -27,6 +56,7 @@ public class SchemaHandler : ISchemaHandler, IEventHandler
     /// <inheritdoc/>
     public string? HandleSchemaEvent(object data)
     {
+        // Process the data
         JObject jsonData = JObject.Parse(data?.ToString() ?? string.Empty);
         if (jsonData is null || !jsonData.HasValues)
         {
@@ -39,6 +69,19 @@ public class SchemaHandler : ISchemaHandler, IEventHandler
         }
         jsonData["result"] = int.Parse(firstNumber.ToString()) * 5;
 
+        // Persist the data
+        var documents = _database.Find(new BsonDocument()).Project<BsonDocument>(Builders<BaseData>.Projection.Include("_id")).ToList();
+        var document = documents.FirstOrDefault();
+        if (document is not null)
+        {
+            _database.ReplaceOne(document, new BaseData { Id = document["_id"].AsObjectId, JsonData = jsonData.ToString() });
+        }
+        else
+        {
+            _database.InsertOne(new BaseData { JsonData = jsonData.ToString() });
+        }
+
+        // Return the modified data
         return jsonData.ToString();
     }
 

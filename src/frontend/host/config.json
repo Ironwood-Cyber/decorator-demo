@@ -1,0 +1,22 @@
+{
+  "mfes": [
+    {
+      "name": "app1",
+      "location": "http://localhost:3001/mf-manifest.json",
+      "component": "Form",
+      "componentLabel": "Form One"
+    },
+    {
+      "name": "app2",
+      "location": "http://localhost:3002/mf-manifest.json",
+      "component": "Form",
+      "componentLabel": "Form Two"
+    },
+    {
+      "name": "app3",
+      "location": "http://localhost:3003/mf-manifest.json",
+      "component": "Form",
+      "componentLabel": "Form Three"
+    }
+  ]
+}

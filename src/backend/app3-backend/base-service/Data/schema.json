@@ -1,21 +1,26 @@
 {
   "type": "object",
   "properties": {
-    "name": {
-      "type": "string"
-    },
-    "email": {
-      "type": "string",
-      "format": "email"
-    },
-    "firstNumber": {
-      "type": "number",
-      "minimum": 0,
-      "exclusiveMaximum": 5
-    },
-    "result": {
-      "type": "number"
+    "myArray": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": {
+            "type": "string",
+            "minLength": 3,
+            "description": "Please enter your name"
+          },
+          "age": { "type": "integer" },
+          "birthday": { "type": "string", "format": "date" },
+          "nationality": {
+            "type": "string",
+            "enum": ["DE", "IT", "JP", "US", "RU", "Other"]
+          }
+        },
+        "required": ["id", "name"]
+      }
     }
-  },
-  "required": ["firstNumber"]
+  }
 }

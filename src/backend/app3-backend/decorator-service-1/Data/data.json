@@ -1,3 +1,3 @@
 {
-  "checkbox": true
+  "myArray": [{ "id": "3", "name": "Charlie", "age": 40, "USCitizen": true }]
 }

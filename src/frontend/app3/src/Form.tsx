@@ -5,56 +5,46 @@ import {
 } from '@jsonforms/material-renderers';
 import { Button, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import muiDataGridRenderer from './MaterialDataGridControlRenderer';
 
-const schema = {
-  type: 'object',
-  properties: {
-    myArray: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          id: { type: 'string' },
-          name: {
-            type: 'string',
-            minLength: 3,
-            description: 'Please enter your name',
-          },
-          age: { type: 'integer' },
-          birthday: {
-            type: 'string',
-            format: 'date',
-          },
-          nationality: {
-            type: 'string',
-            enum: ['DE', 'IT', 'JP', 'US', 'RU', 'Other'],
-          },
-          USCitizen: {
-            type: 'boolean',
-          },
-        },
-        required: ['id', 'name'],
-      },
-    },
-  },
-};
-const uiSchema = {
-  type: 'Control',
-  scope: '#/properties/myArray',
-};
-const initialData = {
-  myArray: [
-    { id: '1', name: 'Alice', age: 30, date: '' },
-    { id: '2', name: 'Bob', age: 25 },
-  ],
-};
+const API_URL = 'http://localhost:8081/api';
 
 const Form = () => {
-  const [data, setData] = useState(initialData);
+  const [data, setData] = useState({});
+  const [schema, setSchema] = useState({});
+  const [uiSchema, setUiSchema] = useState({ type: '' });
   const [errors, setErrors] = useState<object[] | undefined>([]);
   const stringifiedData = useMemo(() => JSON.stringify(data, null, 2), [data]);
+
+  useEffect(() => {
+    fetch(`${API_URL}/data`)
+      .then((response) => response.json())
+      .then((response_json) => {
+        setData(response_json);
+      })
+      .catch((err) => {
+        console.warn(err.message);
+      });
+
+    fetch(`${API_URL}/schema`)
+      .then((response) => response.json())
+      .then((response_json) => {
+        setSchema(response_json);
+      })
+      .catch((err) => {
+        console.warn(err.message);
+      });
+
+    fetch(`${API_URL}/uischema`)
+      .then((response) => response.json())
+      .then((response_json) => {
+        setUiSchema(response_json);
+      })
+      .catch((err) => {
+        console.warn(err.message);
+      });
+  }, []);
 
   const handleSubmit = () => {
     console.log('Submit', data);

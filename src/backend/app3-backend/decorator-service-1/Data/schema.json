@@ -1,13 +1,19 @@
 {
   "type": "object",
   "properties": {
-    "checkbox": {
-      "type": "boolean"
-    },
-    "multipleChoice": {
-      "type": "string",
-      "enum": ["foo", "bar", "foobar"]
+    "myArray": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 5,
+            "description": "Please enter your name"
+          },
+          "USCitizen": { "type": "boolean" }
+        }
+      }
     }
-  },
-  "required": ["multipleChoice"]
+  }
 }

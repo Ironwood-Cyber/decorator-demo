@@ -1,0 +1,32 @@
+{
+  "type": "VerticalLayout",
+  "elements": [
+    {
+      "type": "Group",
+      "label": "Input Group 1",
+      "$id": 100,
+      "elements": [
+        {
+          "type": "Control",
+          "scope": "#/properties/multipleChoice",
+          "label": "Multiple Choice Answer",
+          "options": {
+            "format": "radio"
+          },
+          "$id": 115
+        }
+      ]
+    },
+    {
+      "type": "Group",
+      "label": "Input Group 2",
+      "elements": [
+        {
+          "type": "Control",
+          "label": "Checkbox",
+          "scope": "#/properties/checkbox"
+        }
+      ]
+    }
+  ]
+}

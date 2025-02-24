@@ -7,13 +7,18 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.json" />
-    <PackageReference Include="RestSharp" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     <PackageReference Include="Swashbuckle.AspNetCore" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../shared/Shared.csproj" />
+    <ProjectReference Include="../../shared/Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Data/eventhandler.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

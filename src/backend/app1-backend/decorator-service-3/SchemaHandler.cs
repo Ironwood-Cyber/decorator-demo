@@ -28,7 +28,7 @@ public class SchemaHandler : ISchemaHandler, IEventHandler
 
     public SchemaHandler()
     {
-        string mongoUri = "mongodb://localhost:27017";
+        string mongoUri = "mongodb://admin:admin@localhost:27017/test";
         _database = new MongoClient(mongoUri).GetDatabase("test").GetCollection<BaseData>(nameof(BaseData));
     }
 

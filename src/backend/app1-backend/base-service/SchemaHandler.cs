@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using MassTransit;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Newtonsoft.Json;
@@ -11,7 +12,7 @@ using Shared;
 
 namespace BaseService;
 
-public class BaseData
+public class Data
 {
     [JsonIgnore]
     public ObjectId Id { get; set; }
@@ -19,23 +20,23 @@ public class BaseData
     public string JsonData { get; set; } = string.Empty;
 }
 
+public class Message
+{
+    public required string JsonData { get; set; }
+}
+
 /// <summary>
 /// Handles reading the various JsonForms schema files as well as the event handling
 /// </summary>
-public class SchemaHandler : ISchemaHandler, IEventHandler
+public class SchemaHandler(IMongoDatabase db, IBus bus) : ISchemaHandler, IEventHandler
 {
-    private readonly IMongoCollection<BaseData> _database;
-
-    public SchemaHandler()
-    {
-        string mongoUri = "mongodb://localhost:27017";
-        _database = new MongoClient(mongoUri).GetDatabase("test").GetCollection<BaseData>(nameof(BaseData));
-    }
+    private readonly IMongoCollection<Data> _collection = db.GetCollection<Data>(nameof(Data));
+    private readonly IBus _bus = bus;
 
     /// <inheritdoc/>
     public async Task<string> GetDataAsStringAsync()
     {
-        var documents = await _database.Find(_ => true).Project<BaseData>(Builders<BaseData>.Projection.Exclude("_id")).ToListAsync();
+        var documents = await _collection.Find(_ => true).Project<Data>(Builders<Data>.Projection.Exclude("_id")).ToListAsync();
         var data = documents.FirstOrDefault();
         if (data is not null)
         {
@@ -70,16 +71,19 @@ public class SchemaHandler : ISchemaHandler, IEventHandler
         jsonData["result"] = int.Parse(firstNumber.ToString()) * 5;
 
         // Persist the data
-        var documents = _database.Find(new BsonDocument()).Project<BsonDocument>(Builders<BaseData>.Projection.Include("_id")).ToList();
+        var documents = _collection.Find(new BsonDocument()).Project<BsonDocument>(Builders<Data>.Projection.Include("_id")).ToList();
         var document = documents.FirstOrDefault();
         if (document is not null)
         {
-            _database.ReplaceOne(document, new BaseData { Id = document["_id"].AsObjectId, JsonData = jsonData.ToString() });
+            _collection.ReplaceOne(document, new Data { Id = document["_id"].AsObjectId, JsonData = jsonData.ToString() });
         }
         else
         {
-            _database.InsertOne(new BaseData { JsonData = jsonData.ToString() });
+            _collection.InsertOne(new Data { JsonData = jsonData.ToString() });
         }
+
+        // Publish the event
+        _bus.Publish(new Message { JsonData = jsonData.ToString() });
 
         // Return the modified data
         return jsonData.ToString();

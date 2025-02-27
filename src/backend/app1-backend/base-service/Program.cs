@@ -8,11 +8,17 @@ using static System.Net.Mime.MediaTypeNames;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+// Set up controllers, swagger, and CORS
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCors(builder => builder.AddDefaultPolicy(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin()));
 
+// Add mongo and mass transit services used by the handlers
+builder.Services.AddMongoDB();
+builder.Services.AddRabbitMq();
+
+// Add the handlers used by the routes
 builder.Services.AddSingleton<ISchemaHandler, SchemaHandler>();
 builder.Services.AddSingleton<IEventHandler, SchemaHandler>();
 

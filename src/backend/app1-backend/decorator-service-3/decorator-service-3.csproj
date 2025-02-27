@@ -10,6 +10,7 @@
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
     <PackageReference Include="Swashbuckle.AspNetCore" />
     <PackageReference Include="MongoDB.Driver" />
+    <PackageReference Include="System.ComponentModel.Composition" />
   </ItemGroup>
 
   <ItemGroup>

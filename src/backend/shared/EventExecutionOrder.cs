@@ -1,4 +1,4 @@
-namespace GatewayService.Configuration;
+namespace Shared;
 
 /// <summary>
 /// The order in which the decorator should be executed
@@ -11,21 +11,26 @@ public enum EventExecutionOrder
     None = 0,
 
     /// <summary>
+    /// Execute the decorator as the base service.
+    /// </summary>
+    BaseService = 1,
+
+    /// <summary>
     /// Override the base service with the decorator. The base service will not be executed.
     /// </summary>
-    OverrideBaseService = 1,
+    OverrideBaseService = 2,
 
     /// <summary>
     /// Execute the decorator before the base service.
     /// The decorator will receive the request body as sent by the client.
     /// </summary>
-    BeforeBaseService = 2,
+    BeforeBaseService = 3,
 
     /// <summary>
     /// Execute the decorator after the base service.
     /// The decorator will receive the result of the base service as the request body.
     /// </summary>
-    AfterBaseServoce = 3,
+    AfterBaseService = 4,
 
     // InsertBaseService = 4, For future: insert into the middle of the base service functionality???? could be difficult
 }

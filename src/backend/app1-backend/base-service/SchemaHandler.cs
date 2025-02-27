@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -22,13 +23,17 @@ public class BaseData
 /// <summary>
 /// Handles reading the various JsonForms schema files as well as the event handling
 /// </summary>
+[Export(typeof(ISchemaHandler))]
+[Export(typeof(IEventHandler))]
+[ExportMetadata(nameof(IHandlerData.ExecutionOrder), EventExecutionOrder.BaseService)]
+[ExportMetadata(nameof(IHandlerData.ServiceType), ServiceType.Base)]
 public class SchemaHandler : ISchemaHandler, IEventHandler
 {
     private readonly IMongoCollection<BaseData> _database;
 
     public SchemaHandler()
     {
-        string mongoUri = "mongodb://localhost:27017";
+        string mongoUri = "mongodb://admin:admin@localhost:27017/test";
         _database = new MongoClient(mongoUri).GetDatabase("test").GetCollection<BaseData>(nameof(BaseData));
     }
 

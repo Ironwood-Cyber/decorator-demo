@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.Composition;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -22,6 +23,10 @@ public class BaseData
 /// <summary>
 /// Handles reading the various JsonForms schema files as well as the event handling
 /// </summary>
+[Export(typeof(ISchemaHandler))]
+[Export(typeof(IEventHandler))]
+[ExportMetadata(nameof(IHandlerData.ExecutionOrder), EventExecutionOrder.OverrideBaseService)]
+[ExportMetadata(nameof(IHandlerData.ServiceType), ServiceType.Decorator)]
 public class SchemaHandler : ISchemaHandler, IEventHandler
 {
     private readonly IMongoCollection<BaseData> _database;

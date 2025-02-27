@@ -8,8 +8,10 @@
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="7.2.0" />
     <PackageVersion Include="Newtonsoft.json" Version="13.0.3" />
     <PackageVersion Include="RestSharp" Version="112.1.0" />
+    <PackageVersion Include="System.ComponentModel.Composition" Version="8.0.0" />
   </ItemGroup>
   <ItemGroup>
+    <!-- <GlobalPackageReference Include="System.ComponentModel.Composition" Version="8.0.0" /> -->
     <GlobalPackageReference Include="SonarAnalyzer.CSharp" Version="10.3.0.106239" />
     <GlobalPackageReference Include="coverlet.collector" Version="6.0.2" />
   </ItemGroup>

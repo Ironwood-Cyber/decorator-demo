@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using GatewayService.Configuration;
 using GatewayService.Configuration.Dll;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -197,7 +196,7 @@ public class DllDataHandler : IDataHandler
         // Group all the decorator services by their execution order
         var overrideTypes = _dllConfig.DecoratorServiceDlls.Where(s => s.ExecutionOrder == EventExecutionOrder.OverrideBaseService).Select(s => _typeMap[s.ServiceDll]);
         var beforeTypes = _dllConfig.DecoratorServiceDlls.Where(s => s.ExecutionOrder == EventExecutionOrder.BeforeBaseService).Select(s => _typeMap[s.ServiceDll]);
-        var afterTypes = _dllConfig.DecoratorServiceDlls.Where(s => s.ExecutionOrder == EventExecutionOrder.AfterBaseServoce).Select(s => _typeMap[s.ServiceDll]);
+        var afterTypes = _dllConfig.DecoratorServiceDlls.Where(s => s.ExecutionOrder == EventExecutionOrder.AfterBaseService).Select(s => _typeMap[s.ServiceDll]);
 
         // Handle services that override the base service
         if (overrideTypes.Any())

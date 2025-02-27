@@ -126,7 +126,7 @@ public class ServiceDataHandler : IDataHandler
         // Group all the decorator services by their execution order
         var overrideClients = _serviceConfig.DecoratorServices.Where(s => s.ExecutionOrder == EventExecutionOrder.OverrideBaseService).Select(s => _restClientMap[s.ServiceUri]);
         var beforeClients = _serviceConfig.DecoratorServices.Where(s => s.ExecutionOrder == EventExecutionOrder.BeforeBaseService).Select(s => _restClientMap[s.ServiceUri]);
-        var afterClients = _serviceConfig.DecoratorServices.Where(s => s.ExecutionOrder == EventExecutionOrder.AfterBaseServoce).Select(s => _restClientMap[s.ServiceUri]);
+        var afterClients = _serviceConfig.DecoratorServices.Where(s => s.ExecutionOrder == EventExecutionOrder.AfterBaseService).Select(s => _restClientMap[s.ServiceUri]);
 
         // Handle services that override the base service
         if (overrideClients.Any())

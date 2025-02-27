@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.Composition;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -9,6 +10,9 @@ namespace DecoratorService2;
 /// <summary>
 /// Handles reading the various JsonForms schema files
 /// </summary>
+[Export(typeof(ISchemaHandler))]
+[ExportMetadata(nameof(IHandlerData.ExecutionOrder), EventExecutionOrder.None)]
+[ExportMetadata(nameof(IHandlerData.ServiceType), ServiceType.Decorator)]
 public class SchemaHandler : ISchemaHandler
 {
     /// <inheritdoc/>

@@ -1,3 +1,5 @@
+using Shared;
+
 namespace GatewayService.Configuration.Service;
 
 /// <summary>

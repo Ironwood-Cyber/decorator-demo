@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.Composition;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -10,6 +11,10 @@ namespace BaseService;
 /// <summary>
 /// Handles reading the various JsonForms schema files as well as the event handling
 /// </summary>
+[Export(typeof(ISchemaHandler))]
+[Export(typeof(IEventHandler))]
+[ExportMetadata(nameof(IHandlerData.ExecutionOrder), EventExecutionOrder.BaseService)]
+[ExportMetadata(nameof(IHandlerData.ServiceType), ServiceType.Base)]
 public class SchemaHandler : ISchemaHandler, IEventHandler
 {
     /// <inheritdoc/>

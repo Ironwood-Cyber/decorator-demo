@@ -1,9 +1,11 @@
-﻿using GatewayService.Configuration.Dll;
-using GatewayService.Handlers;
+﻿using GatewayService.Handlers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Shared;
+using Shared.Configuration.Dll;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -12,11 +14,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCors(builder => builder.AddDefaultPolicy(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin()));
 
-// builder.Services.Configure<ServiceHandlerConfig>(builder.Configuration.GetSection(ServiceHandlerConfig.ConfigSection)); // This is the old ServiceHandlerConfig class from service based implementation
-// builder.Services.AddScoped<IDataHandler, ServiceDataHandler>(); // Service based implementation
-
 builder.Services.Configure<DllHandlerConfig>(builder.Configuration.GetSection(DllHandlerConfig.ConfigSection)); // This is the new DllHandlerConfig class from dll based implementation
 builder.Services.AddScoped<IDataHandler, DllDataHandler>(); // DLL based implementation
+
+// Add mongo and mass transit services used by the handler
+builder.Services.AddMongoDB();
+builder.Services.AddRabbitMq(builder.Configuration.GetSection(DllHandlerConfig.ConfigSection).Get<DllHandlerConfig>()!); // This overload of AddRabbitMq takes in the DllHandlerConfig object and loads any consumers from the DLLs
 
 builder.Services.Configure<RouteOptions>(opts => opts.LowercaseUrls = true);
 

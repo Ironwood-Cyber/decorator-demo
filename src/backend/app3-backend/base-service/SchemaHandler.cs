@@ -29,18 +29,8 @@ public class SchemaHandler : ISchemaHandler, IEventHandler
     {
         // Process the data
         JObject jsonData = JObject.Parse(data?.ToString() ?? string.Empty);
-        if (jsonData is null || !jsonData.HasValues)
-        {
-            return null;
-        }
 
-        if (!jsonData!.TryGetValue("firstNumber", out JToken? firstNumber))
-        {
-            return null;
-        }
-        jsonData["result"] = int.Parse(firstNumber.ToString()) * 5;
-
-        // Return the modified data
+        // Return the data
         return jsonData.ToString();
     }
 

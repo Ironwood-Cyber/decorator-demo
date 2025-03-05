@@ -2,6 +2,8 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using MassTransit;
+using MongoDB.Driver;
 using Shared;
 
 namespace DecoratorService4;
@@ -9,7 +11,7 @@ namespace DecoratorService4;
 /// <summary>
 /// Handles reading the various JsonForms schema files as well as the event handling
 /// </summary>
-public class SchemaHandler : ISchemaHandler, IEventHandler
+public class SchemaHandler(IMongoDatabase db, IBus bus) : ISchemaHandler, IEventHandler
 {
     /// <inheritdoc/>
     public async Task<string> GetUiSchemaAsStringAsync() => await GetFileAsStringAsync(Path.Combine(GetPath, Constants.Files.UiSchema));

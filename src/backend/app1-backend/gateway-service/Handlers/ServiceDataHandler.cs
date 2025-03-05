@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using GatewayService.Configuration;
-using GatewayService.Configuration.Service;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
 using Shared;
+using Shared.Configuration;
+using Shared.Configuration.Service;
 
 namespace GatewayService.Handlers;
 

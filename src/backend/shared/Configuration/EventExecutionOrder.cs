@@ -1,4 +1,4 @@
-namespace GatewayService.Configuration;
+namespace Shared.Configuration;
 
 /// <summary>
 /// The order in which the decorator should be executed

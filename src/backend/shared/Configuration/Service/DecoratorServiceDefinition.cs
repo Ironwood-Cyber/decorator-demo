@@ -1,4 +1,4 @@
-namespace GatewayService.Configuration.Service;
+namespace Shared.Configuration.Service;
 
 /// <summary>
 /// Represents a decorator service that can be called by the gateway service

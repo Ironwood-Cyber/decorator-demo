@@ -1,4 +1,4 @@
-namespace GatewayService.Configuration.Dll;
+namespace Shared.Configuration.Dll;
 
 /// <summary>
 /// Represents a decorator service dll that can be called by the gateway service

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace GatewayService.Configuration.Service;
+namespace Shared.Configuration.Service;
 
 /// <summary>
 /// Wrapper around an appsettings.json section to configure options at runtime

@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using GatewayService.Configuration;
-using GatewayService.Configuration.Dll;
+using MassTransit;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MongoDB.Driver;
 using Newtonsoft.Json.Linq;
 using Shared;
+using Shared.Configuration;
+using Shared.Configuration.Dll;
 
 namespace GatewayService.Handlers;
 
@@ -16,14 +18,16 @@ public class DllDataHandler : IDataHandler
 {
     private readonly ILogger<DllDataHandler> _logger;
     private readonly DllHandlerConfig _dllConfig;
+    private readonly IBus _bus;
     private readonly Type _schemaHandlerType = typeof(ISchemaHandler);
     private readonly Type _eventHandlerType = typeof(IEventHandler);
     private readonly Dictionary<string, Type> _typeMap = []; // Key = DLL path, Value = Type implementing ISchemaHandler and/or IEventHandler
 
-    public DllDataHandler(ILogger<DllDataHandler> logger, IOptionsSnapshot<DllHandlerConfig> configuration)
+    public DllDataHandler(ILogger<DllDataHandler> logger, IOptionsSnapshot<DllHandlerConfig> configuration, IBus bus)
     {
         _logger = logger;
         _dllConfig = configuration.Value;
+        _bus = bus;
 
         List<DecoratorServiceDllDefinition> decoratorDlls = _dllConfig.DecoratorServiceDlls;
 
@@ -216,6 +220,7 @@ public class DllDataHandler : IDataHandler
                 {
                     mergedResponse.Merge(overrideClientResponses.ElementAt(i));
                 }
+                await _bus.Publish(new Message() { JsonData = mergedResponse.ToString() });
                 return mergedResponse;
             }
         }
@@ -266,9 +271,12 @@ public class DllDataHandler : IDataHandler
                 {
                     mergedAfterResponse.Merge(afterClientResponses.ElementAt(i));
                 }
+                await _bus.Publish(new Message() { JsonData = mergedAfterResponse.ToString() });
                 return mergedAfterResponse;
             }
         }
+
+        await _bus.Publish(new Message() { JsonData = baseServiceResponse.ToString() });
 
         // Use task to get rid of warning
         return await Task.Run(() => baseServiceResponse!);

@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using GatewayService.Configuration;
-using GatewayService.Configuration.Dll;
+using MassTransit;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MongoDB.Driver;
 using Newtonsoft.Json.Linq;
 using Shared;
+using Shared.Configuration;
+using Shared.Configuration.Dll;
 
 namespace GatewayService.Handlers;
 
@@ -16,14 +18,18 @@ public class DllDataHandler : IDataHandler
 {
     private readonly ILogger<DllDataHandler> _logger;
     private readonly DllHandlerConfig _dllConfig;
+    private readonly IMongoDatabase _db;
+    private readonly IBus _bus;
     private readonly Type _schemaHandlerType = typeof(ISchemaHandler);
     private readonly Type _eventHandlerType = typeof(IEventHandler);
     private readonly Dictionary<string, Type> _typeMap = []; // Key = DLL path, Value = Type implementing ISchemaHandler and/or IEventHandler
 
-    public DllDataHandler(ILogger<DllDataHandler> logger, IOptionsSnapshot<DllHandlerConfig> configuration)
+    public DllDataHandler(ILogger<DllDataHandler> logger, IOptionsSnapshot<DllHandlerConfig> configuration, IMongoDatabase db, IBus bus)
     {
         _logger = logger;
         _dllConfig = configuration.Value;
+        _db = db;
+        _bus = bus;
 
         List<DecoratorServiceDllDefinition> decoratorDlls = _dllConfig.DecoratorServiceDlls;
 
@@ -52,7 +58,7 @@ public class DllDataHandler : IDataHandler
 
         foreach (Type type in _typeMap.Values)
         {
-            if (Activator.CreateInstance(type) is not ISchemaHandler schemaHandler)
+            if (Activator.CreateInstance(type, [_db, _bus]) is not ISchemaHandler schemaHandler)
             {
                 _logger.LogWarning("Could not create instance of type {Class}", type.FullName);
                 continue;
@@ -84,7 +90,7 @@ public class DllDataHandler : IDataHandler
 
         foreach (Type type in _typeMap.Values)
         {
-            if (Activator.CreateInstance(type) is not ISchemaHandler schemaHandler)
+            if (Activator.CreateInstance(type, [_db, _bus]) is not ISchemaHandler schemaHandler)
             {
                 _logger.LogWarning("Could not create instance of type {Class}", type.FullName);
                 continue;
@@ -116,7 +122,7 @@ public class DllDataHandler : IDataHandler
 
         foreach (Type type in _typeMap.Values)
         {
-            if (Activator.CreateInstance(type) is not ISchemaHandler schemaHandler)
+            if (Activator.CreateInstance(type, [_db, _bus]) is not ISchemaHandler schemaHandler)
             {
                 _logger.LogWarning("Could not create instance of type {Class}", type.FullName);
                 continue;
@@ -156,7 +162,7 @@ public class DllDataHandler : IDataHandler
 
         foreach (Type type in _typeMap.Values)
         {
-            if (Activator.CreateInstance(type) is not IEventHandler eventHandler)
+            if (Activator.CreateInstance(type, [_db, _bus]) is not IEventHandler eventHandler)
             {
                 _logger.LogWarning("Could not create instance of type {Class}", type.FullName);
                 continue;
@@ -282,7 +288,7 @@ public class DllDataHandler : IDataHandler
 
     private JObject? GetEventResponseAsync(Type type, JObject requestData)
     {
-        if (Activator.CreateInstance(type) is not IEventHandler eventHandler)
+        if (Activator.CreateInstance(type, [_db, _bus]) is not IEventHandler eventHandler)
         {
             _logger.LogWarning("Could not create instance of type {Class}", type.FullName);
             return null;

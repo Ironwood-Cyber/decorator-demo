@@ -15,6 +15,7 @@ const Form = () => {
   const [schema, setSchema] = useState({});
   const [uiSchema, setUiSchema] = useState({ type: '' });
   const [errors, setErrors] = useState<object[] | undefined>([]);
+  const [apiResponse, setApiResponse] = useState<string | undefined>();
   const stringifiedData = useMemo(() => JSON.stringify(data, null, 2), [data]);
 
   useEffect(() => {
@@ -46,8 +47,24 @@ const Form = () => {
       });
   }, []);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     console.log('Submit', data);
+    const response = await fetch(`${API_URL}/event`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      console.log('Error response from server event handler');
+      setApiResponse('Error response from server event handler');
+      return;
+    }
+
+    const response_json = await response.json();
+    setData(response_json);
+    setApiResponse(JSON.stringify(response_json, null, 2));
   };
 
   console.log('FORM 3 RENDERING');
@@ -82,6 +99,8 @@ const Form = () => {
       <Grid size={4}>
         <Typography variant={'h6'}>Data</Typography>
         <pre>{stringifiedData}</pre>
+        <Typography variant={'h6'}>API Response</Typography>
+        <pre>{apiResponse}</pre>
       </Grid>
     </Grid>
   );

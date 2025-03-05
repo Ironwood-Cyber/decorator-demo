@@ -6,29 +6,15 @@ using System.Threading.Tasks;
 using MassTransit;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Shared;
 
 namespace BaseService;
 
-public class Data
-{
-    [JsonIgnore]
-    public ObjectId Id { get; set; }
-
-    public string JsonData { get; set; } = string.Empty;
-}
-
-public class Message
-{
-    public required string JsonData { get; set; }
-}
-
 /// <summary>
 /// Handles reading the various JsonForms schema files as well as the event handling
 /// </summary>
-public class SchemaHandler(IMongoDatabase db, IBus bus) : ISchemaHandler, IEventHandler
+public class SchemaHandler(IMongoDatabase db, IBus bus) : IEventHandler, ISchemaHandler
 {
     private readonly IMongoCollection<Data> _collection = db.GetCollection<Data>(nameof(Data));
     private readonly IBus _bus = bus;

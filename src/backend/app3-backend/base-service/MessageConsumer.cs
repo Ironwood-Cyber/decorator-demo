@@ -5,6 +5,9 @@ using Shared;
 
 namespace BaseService;
 
+/// <summary>
+/// Basic message consumer that logs the message received
+/// </summary>
 public class App3MessageConsumer(ILogger<App3MessageConsumer> logger) : IConsumer<Message>
 {
     private readonly ILogger<App3MessageConsumer> _logger = logger;

@@ -1,131 +1,129 @@
-# Setup
+# Decorator Backend Demo with Micro Frontends and a RabbitMQ Message Bus Using MassTransit
 
-Information on how to install all required packages to run the demo.
+## Links
 
-## Frontend
+Micro Frontends / Module Federation: https://module-federation.io/guide/start/quick-start.html
 
-1. Navigate into the frontend directory:
+JsonForms: https://jsonforms.io/
 
-```bash
-cd src/frontend/
+RabbitMQ: https://www.rabbitmq.com/
+
+MassTransit: https://masstransit.io/
+
+## Intro
+
+This branch demonstrates a decorator backend architecture with micro frontends. There are 2 backend services (`src/backend/app1-backend/gateway-service` and `src/backend/app3-backend/gateway-service`) and 4 total frontends. Of those frontends, 3 are the producer microfrontends (`src/frontend/app1`, `src/frontend/app2`, and `src/frontend/app3`) while the `src/frontend/host` frontend is the consumer / host of the 3 producer frontends.
+
+Each of the 3 microfrontends contains and exposes a JsonForms component used by the `host` frontend. Of the 3 microfrontends, 2 of them (`app1` and `app3`) have a backend associated with them (`app1-backend/gateway-service` and `app3-backend/gateway-service` respectively).
+
+The two backends communicate events using a RabbitMQ message bus. The backends are using MassTransit as an abstraction over RabbitMQ.
+
+## Setup and Running
+
+### Docker Compose
+
+This project contains a docker compose file used to run a MongoDB and RabbitMQ instance to persist JsonForms data and communicate between the backend services respectively. Before building and running the backends and frontends, run:
+
+```
+docker compose up -d
 ```
 
-2. Run the following `npm` command:
+to spin up both the MongoDB and RabbitMQ containers.
 
-```bash
-npm install
+### Backend(s)
+
+#### Step 1, Building
+
+From the root directory of this repo, run:
+
 ```
-
-Done!
-
-## Backend
-
-1. From the base project directory run the following `dotnet` command:
-
-```bash
 dotnet build
 ```
 
-Done!
+#### Step 2, Running the Backends
 
-# Running the demo
+Navigate into `src/backend/app1-backend/gateway-service` and run:
 
-## Frontend
-
-1. Navigate into the frontend directory:
-
-```bash
-cd src/frontend/
 ```
-
-2. Run the following `npm` command:
-
-```bash
-npm run dev
-```
-
-The frontend should now be running on local port `3000`.
-
-## Backend
-
-3. In a new terminal session / window, navigate to the backend gateway directory:
-
-```bash
-cd src/backend/gateway-service/
-```
-
-4. Run the following `dotnet` command:
-
-```bash
 dotnet run
 ```
 
-The backend gateway API should now be running on local port `8080`.
+From a new terminal window, navigate into `src/backend/app3-backend/gateway-service` and run:
 
-5. Navigate to `http://localhost:3000` to view the running web app.
-
-# Modifying the gateway service configuration file to add or remove decorators
-
-Below is the gateway service configuration file found at `src/backend/gateway-service/appsettings.json`. Under the `DllHandlerConfig.DecoratorServiceDlls` field, each decorator library DLL is listed along with an execution order on how to process the event handling logic. Some decorator libraries do not have event handling logic, which is why some are marked as `None`. The below config contains a list entry for all the decorator libraries, but the entries can be removed / added back to the config during runtime to modify the data presented on the frontend:
-
-```json
-{
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft.AspNetCore": "Warning",
-      "System.Net.Http.HttpClient": "Warning"
-    }
-  },
-  "DllHandlerConfig": {
-    "BaseServiceDll": "../base-service/bin/Debug/net8.0/base-service.dll",
-    "DecoratorServiceDlls": [
-      {
-        "ServiceDll": "../decorator-service-1/bin/Debug/net8.0/decorator-service-1.dll",
-        "ExecutionOrder": "None"
-      },
-      {
-        "ServiceDll": "../decorator-service-2/bin/Debug/net8.0/decorator-service-2.dll",
-        "ExecutionOrder": "None"
-      },
-      {
-        "ServiceDll": "../decorator-service-3/bin/Debug/net8.0/decorator-service-3.dll",
-        "ExecutionOrder": "OverrideBaseService"
-      },
-      {
-        "ServiceDll": "../decorator-service-4/bin/Debug/net8.0/decorator-service-4.dll",
-        "ExecutionOrder": "OverrideBaseService"
-      }
-    ]
-  }
-}
+```
+dotnet run
 ```
 
-For example, the configuration below will only use the base library and the decorator 1 library:
+Both backend services should now be running on port 8080 and 8081 respectively.
 
-```json
-{
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft.AspNetCore": "Warning",
-      "System.Net.Http.HttpClient": "Warning"
-    }
-  },
-  "DllHandlerConfig": {
-    "BaseServiceDll": "../base-service/bin/Debug/net8.0/base-service.dll",
-    "DecoratorServiceDlls": [
-      {
-        "ServiceDll": "../decorator-service-2/bin/Debug/net8.0/decorator-service-2.dll",
-        "ExecutionOrder": "None"
-      }
-    ]
-  }
-}
+In order to modify which decorator DLLs are loaded into the gateway services, please refer to the main branch README section linked here: [README](https://github.com/Ironwood-Cyber/decorator-demo/tree/main?tab=readme-ov-file#modifying-the-gateway-service-configuration-file-to-add-or-remove-decorators).
+
+The `app1-backend` contains a `gateway-service` (the main entrypoint for the app1 API), a `base-service`, and 4 decorator services labeled `decorator-service-1` thru `decorator-service-4`. The `app3-backend` contains a `gateway-service` (the main entrypoint for the app3 API), a `base-service` and 1 decorator labeled `decorator-service-1`.
+
+### Frontend(s)
+
+#### Step 1, Building
+
+To build the frontends, navigate into each frontend application individually (`src/frontend/app1`, `src/frontend/app2`, `src/frontend/app3`, `src/frontend/host`) and run:
+
+```
+npm i
 ```
 
-The `ServiceDll` field is a relative path to the specific DLL relative to the `src/backend/gateway-service` directory.
+#### Step 3, Running the Frontends
 
-# Roadmap
+Each of the 3 apps can be run individually as a standalone frontend, however, for the `host` application to work, all 3 apps need to be running along side the `host` application.
 
-1. Dockerize
+To run an individual frontend, navigate into the appN (where N is 1-3) directory and run:
+
+```
+npm run dev
+```
+
+When running app1 and/or app3, the respective backend gateway service for the frontend must be run as well for the frontend apps to run correctly.
+
+In order to run the host application, all 3 apps need to be running (as well as the backends for app1 and app3) for the host application to function correctly.
+
+The full steps to run are shown below:
+
+> App1
+>
+> ```
+> # From root dir
+> cd src/frontend/app1
+> npm run dev
+>
+> # From root dir
+> cd src/backend/app1-backend/gateway-service
+> dotnet run
+> ```
+
+> App2
+>
+> ```
+> # From root dir
+> cd src/frontend/app2
+> npm run dev
+> ```
+
+> App3
+>
+> ```
+> # From root dir
+> cd src/frontend/app3
+> npm run dev
+>
+> # From root dir
+> cd src/backend/app3-backend/gateway-service
+> dotnet run
+> ```
+
+> Host
+>
+> ```
+> # From root dir
+> cd src/frontend/host
+> npm run dev
+> ```
+
+When submitting the forms from app1 (assuming decorator 4 is not loaded, as it handles events client side) and/or app3, an event handler route will be called which triggers an event to be published on the message bus. Both app1 and app3 base services contain a message consumer that simply prints the event message to the console. When the gateway services for the apps start up, it will load those consumers from the respective base services and register them with MassTransit, and in turn, create consumers in RabbitMQ.

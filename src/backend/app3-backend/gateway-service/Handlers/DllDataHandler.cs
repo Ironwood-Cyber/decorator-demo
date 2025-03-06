@@ -56,6 +56,7 @@ public class DllDataHandler : IDataHandler
 
         foreach (Type type in _typeMap.Values)
         {
+            // In this implementation, no constructor parameters are passed to the schema handler
             if (Activator.CreateInstance(type) is not ISchemaHandler schemaHandler)
             {
                 _logger.LogWarning("Could not create instance of type {Class}", type.FullName);
@@ -88,6 +89,7 @@ public class DllDataHandler : IDataHandler
 
         foreach (Type type in _typeMap.Values)
         {
+            // In this implementation, no constructor parameters are passed to the schema handler
             if (Activator.CreateInstance(type) is not ISchemaHandler schemaHandler)
             {
                 _logger.LogWarning("Could not create instance of type {Class}", type.FullName);
@@ -120,6 +122,7 @@ public class DllDataHandler : IDataHandler
 
         foreach (Type type in _typeMap.Values)
         {
+            // In this implementation, no constructor parameters are passed to the schema handler
             if (Activator.CreateInstance(type) is not ISchemaHandler schemaHandler)
             {
                 _logger.LogWarning("Could not create instance of type {Class}", type.FullName);
@@ -160,6 +163,7 @@ public class DllDataHandler : IDataHandler
 
         foreach (Type type in _typeMap.Values)
         {
+            // In this implementation, no constructor parameters are passed to the schema handler
             if (Activator.CreateInstance(type) is not IEventHandler eventHandler)
             {
                 _logger.LogWarning("Could not create instance of type {Class}", type.FullName);
@@ -220,6 +224,7 @@ public class DllDataHandler : IDataHandler
                 {
                     mergedResponse.Merge(overrideClientResponses.ElementAt(i));
                 }
+                // Note: in this implementation the gateway service handles the publishing of messages to the bus
                 await _bus.Publish(new Message() { JsonData = mergedResponse.ToString() });
                 return mergedResponse;
             }
@@ -271,11 +276,13 @@ public class DllDataHandler : IDataHandler
                 {
                     mergedAfterResponse.Merge(afterClientResponses.ElementAt(i));
                 }
+                // Note: in this implementation the gateway service handles the publishing of messages to the bus
                 await _bus.Publish(new Message() { JsonData = mergedAfterResponse.ToString() });
                 return mergedAfterResponse;
             }
         }
 
+        // Note: in this implementation the gateway service handles the publishing of messages to the bus
         await _bus.Publish(new Message() { JsonData = baseServiceResponse.ToString() });
 
         // Use task to get rid of warning

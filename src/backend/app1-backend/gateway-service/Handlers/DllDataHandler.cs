@@ -58,6 +58,7 @@ public class DllDataHandler : IDataHandler
 
         foreach (Type type in _typeMap.Values)
         {
+            // Create an instance of the type, injecting the database and bus
             if (Activator.CreateInstance(type, [_db, _bus]) is not ISchemaHandler schemaHandler)
             {
                 _logger.LogWarning("Could not create instance of type {Class}", type.FullName);
@@ -90,6 +91,7 @@ public class DllDataHandler : IDataHandler
 
         foreach (Type type in _typeMap.Values)
         {
+            // Create an instance of the type, injecting the database and bus
             if (Activator.CreateInstance(type, [_db, _bus]) is not ISchemaHandler schemaHandler)
             {
                 _logger.LogWarning("Could not create instance of type {Class}", type.FullName);
@@ -122,6 +124,7 @@ public class DllDataHandler : IDataHandler
 
         foreach (Type type in _typeMap.Values)
         {
+            // Create an instance of the type, injecting the database and bus
             if (Activator.CreateInstance(type, [_db, _bus]) is not ISchemaHandler schemaHandler)
             {
                 _logger.LogWarning("Could not create instance of type {Class}", type.FullName);
@@ -162,6 +165,7 @@ public class DllDataHandler : IDataHandler
 
         foreach (Type type in _typeMap.Values)
         {
+            // Create an instance of the type, injecting the database and bus
             if (Activator.CreateInstance(type, [_db, _bus]) is not IEventHandler eventHandler)
             {
                 _logger.LogWarning("Could not create instance of type {Class}", type.FullName);
@@ -288,6 +292,7 @@ public class DllDataHandler : IDataHandler
 
     private JObject? GetEventResponseAsync(Type type, JObject requestData)
     {
+        // Create an instance of the type, injecting the database and bus
         if (Activator.CreateInstance(type, [_db, _bus]) is not IEventHandler eventHandler)
         {
             _logger.LogWarning("Could not create instance of type {Class}", type.FullName);

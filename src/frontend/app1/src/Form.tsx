@@ -7,6 +7,8 @@ import { Button, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { useEffect, useMemo, useState } from 'react';
 
+// Need to run backend/app1-backend/gateway-service for this to work
+
 const API_URL = 'http://localhost:8080/api';
 
 const Form = () => {

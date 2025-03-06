@@ -27,6 +27,7 @@ public class SchemaHandler : ISchemaHandler, IEventHandler
     /// <inheritdoc/>
     public string? HandleSchemaEvent(object data)
     {
+        // Parse the data and multiply the first number field by 5
         JObject jsonData = JObject.Parse(data?.ToString() ?? string.Empty);
         if (jsonData is null || !jsonData.HasValues)
         {

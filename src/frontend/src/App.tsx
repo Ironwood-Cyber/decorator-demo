@@ -1,5 +1,3 @@
-import './App.css';
-
 import { useEffect, useMemo, useState } from 'react';
 import { JsonForms } from '@jsonforms/react';
 import {
@@ -19,6 +17,7 @@ const App = () => {
 
   const stringifiedData = useMemo(() => JSON.stringify(data, null, 2), [data]);
 
+  // Fetch the JsonForms data, schema and ui schema from the server
   useEffect(() => {
     fetch(`${API_URL}/data`)
       .then(response => response.json())

@@ -202,8 +202,15 @@ public class ServiceDataHandler : IDataHandler
         return baseServiceResponse!;
     }
 
+    /// <summary>
+    /// Fetches JSON data from the specified path using the given RestClient
+    /// </summary>
+    /// <param name="restClient">The client to call</param>
+    /// <param name="path">The request path for the client</param>
+    /// <returns>The restclient response as a JObject</returns>
     private async Task<JObject?> FetchJsonAsync(RestClient restClient, string path)
     {
+        // Fetch the JSON data from the specified path using the given RestClient and return it as a JObject
         try
         {
             var response = await restClient.GetAsync(new RestRequest(path));
@@ -233,16 +240,29 @@ public class ServiceDataHandler : IDataHandler
         return null;
     }
 
+    /// <summary>
+    /// Sends the request data to each client handle event route and returns the responses as a list of JObjects
+    /// </summary>
+    /// <param name="clients">The list of rest clients</param>
+    /// <param name="requestData">The body of the handle event request</param>
+    /// <returns>A list of responses from the rest clients handle event route</returns>
     private async Task<IEnumerable<JObject>> GetEventResponsesAsync(IEnumerable<RestClient> clients, JObject requestData)
     {
         var tasks = clients.Select(async client => await GetEventResponseAsync(client, requestData));
         return (await Task.WhenAll(tasks)).Where(response => response != null).Select(response => response!);
     }
 
+    /// <summary>
+    /// Sends the request data to the client handle event route and returns the response as a JObject
+    /// </summary>
+    /// <param name="client">The rest client</param>
+    /// <param name="requestData">The request body for the handle event route</param>
+    /// <returns>The response body from the rest client handle event route as a JObject</returns>
     private async Task<JObject?> GetEventResponseAsync(RestClient client, JObject requestData)
     {
         try
         {
+            // Send the request data to the client handle event route and return the response as a JObject
             var response = await client.PostAsync(new RestRequest(Constants.Routes.Event, Method.Post).AddJsonBody(requestData.ToString()));
             if (!response.IsSuccessStatusCode)
             {

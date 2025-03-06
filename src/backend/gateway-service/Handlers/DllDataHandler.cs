@@ -28,14 +28,14 @@ public class DllDataHandler : IDataHandler
         List<DecoratorServiceDllDefinition> decoratorDlls = _dllConfig.DecoratorServiceDlls;
         _logger.LogInformation("Decorator Dlls: {Dlls}", string.Join(", ", decoratorDlls.Select(dll => dll.ServiceDll)));
 
-        // Add a Type for the base service class
+        // Add a Type for the base service class using the base service DLL and reflection
         Assembly baseAssembly = Assembly.LoadFrom(_dllConfig.BaseServiceDll);
         Type? baseType =
             baseAssembly.GetTypes().SingleOrDefault(t => !t.IsInterface && !t.IsAbstract && (_schemaHandlerType.IsAssignableFrom(t) || _eventHandlerType.IsAssignableFrom(t)))
             ?? throw new ArgumentException($"Could not find types {_schemaHandlerType.Name} or {_eventHandlerType.Name} in assembly {_dllConfig.BaseServiceDll}");
         _typeMap.Add(_dllConfig.BaseServiceDll, baseType);
 
-        // Add a Type for each decorator service class
+        // Add a Type for each decorator service class using the decorator service DLLs and reflection
         foreach (var serviceDll in decoratorDlls.Select(dll => dll.ServiceDll))
         {
             Assembly assembly = Assembly.LoadFrom(serviceDll);
@@ -51,8 +51,10 @@ public class DllDataHandler : IDataHandler
     {
         JObject result = [];
 
+        // Loop thru each type in the dictionary and call the GetData method
         foreach (Type type in _typeMap.Values)
         {
+            // Create an instance of the type
             if (Activator.CreateInstance(type) is not ISchemaHandler schemaHandler)
             {
                 _logger.LogWarning("Could not create instance of type {Class}", type.FullName);
@@ -62,6 +64,7 @@ public class DllDataHandler : IDataHandler
             try
             {
                 string data = await schemaHandler.GetDataAsStringAsync();
+                // Merge the data into the result
                 result.Merge(JObject.Parse(data));
             }
             catch (NotImplementedException)
@@ -83,8 +86,10 @@ public class DllDataHandler : IDataHandler
     {
         JObject result = [];
 
+        // Loop thru each type in the dictionary and call the GetSchema method
         foreach (Type type in _typeMap.Values)
         {
+            // Create an instance of the type
             if (Activator.CreateInstance(type) is not ISchemaHandler schemaHandler)
             {
                 _logger.LogWarning("Could not create instance of type {Class}", type.FullName);
@@ -94,6 +99,7 @@ public class DllDataHandler : IDataHandler
             try
             {
                 string schema = await schemaHandler.GetSchemaAsStringAsync();
+                // Merge the schema into the result
                 result.Merge(JObject.Parse(schema));
             }
             catch (NotImplementedException)
@@ -115,8 +121,10 @@ public class DllDataHandler : IDataHandler
     {
         JObject? result = null;
 
+        // Loop thru each type in the dictionary and call the GetUiSchema method
         foreach (Type type in _typeMap.Values)
         {
+            // Create an instance of the type
             if (Activator.CreateInstance(type) is not ISchemaHandler schemaHandler)
             {
                 _logger.LogWarning("Could not create instance of type {Class}", type.FullName);
@@ -132,6 +140,7 @@ public class DllDataHandler : IDataHandler
                 }
                 else
                 {
+                    // Merge the data into the result using the JsonUtils helper class
                     result = JsonUtils.MergeJsonObjects(result, JObject.Parse(data));
                 }
             }
@@ -146,6 +155,7 @@ public class DllDataHandler : IDataHandler
             }
         }
 
+        // Sort the result by id using the JsonUtils helper class
         result!.SortJsonById();
         return result!;
     }
@@ -155,8 +165,10 @@ public class DllDataHandler : IDataHandler
     {
         JObject result = [];
 
+        // Loop thru each type in the dictionary and call the GetEventHandler method
         foreach (Type type in _typeMap.Values)
         {
+            // Create an instance of the type
             if (Activator.CreateInstance(type) is not IEventHandler eventHandler)
             {
                 _logger.LogWarning("Could not create instance of type {Class}", type.FullName);
@@ -165,9 +177,11 @@ public class DllDataHandler : IDataHandler
 
             try
             {
+                // The get event handler method returns raw javascript code as a string, so we need to wrap it in a json object with a key of "handler"
                 string handler = await eventHandler.GetEventHandlerAsync();
                 JObject jsonHandler = [];
                 jsonHandler.Add("handler", handler);
+                // Merge the handler into the result
                 result.Merge(jsonHandler);
             }
             catch (NotImplementedException)
@@ -275,14 +289,27 @@ public class DllDataHandler : IDataHandler
         return await Task.Run(() => baseServiceResponse!);
     }
 
+    /// <summary>
+    /// Get the event responses from the specified types
+    /// </summary>
+    /// <param name="types">A list of types</param>
+    /// <param name="requestData">The JSON data to send to each type</param>
+    /// <returns>A list of JObjects representing the responses from each types event handler function</returns>
     private IEnumerable<JObject> GetEventResponsesAsync(IEnumerable<Type> types, JObject requestData)
     {
         var results = types.Select(type => GetEventResponseAsync(type, requestData));
         return results.Where(response => response != null).Select(response => response!);
     }
 
+    /// <summary>
+    /// Get the event response from the specified type
+    /// </summary>
+    /// <param name="type">The type to call the event handler function for</param>
+    /// <param name="requestData">The JSON data to send to the types event handler function</param>
+    /// <returns>The JObject result from the types event handler function</returns>
     private JObject? GetEventResponseAsync(Type type, JObject requestData)
     {
+        // Create an instance of the type
         if (Activator.CreateInstance(type) is not IEventHandler eventHandler)
         {
             _logger.LogWarning("Could not create instance of type {Class}", type.FullName);
@@ -291,6 +318,7 @@ public class DllDataHandler : IDataHandler
 
         try
         {
+            // Call the HandleEvent method and return the result as a JObject
             string? handledEvent = eventHandler.HandleSchemaEvent(requestData);
             if (handledEvent is null)
             {

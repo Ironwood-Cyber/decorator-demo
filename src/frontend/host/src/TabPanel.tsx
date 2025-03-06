@@ -7,6 +7,7 @@ import Panel from './Panel';
 import ConfigDialog from './ConfigDialog';
 import config from '../config.json';
 
+// This function loads the remote component, GPT generated code
 const loadComponent = async (scope: string, module: string) => {
   await __webpack_init_sharing__('default');
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -24,6 +25,7 @@ const TabPanel = () => {
   useEffect(() => {
     const imports: React.FC[] = [];
 
+    // Lazy load the components
     config.mfes.forEach((mfe) => {
       const remote = mfe.name;
       const module = mfe.component;

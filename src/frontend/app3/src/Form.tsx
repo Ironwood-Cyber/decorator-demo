@@ -8,6 +8,8 @@ import Grid from '@mui/material/Grid2';
 import { useEffect, useMemo, useState } from 'react';
 import muiDataGridRenderer from './MaterialDataGridControlRenderer';
 
+// Need to run backend/app3-backend/gateway-service for this to work
+
 const API_URL = 'http://localhost:8081/api';
 
 const Form = () => {
@@ -52,6 +54,7 @@ const Form = () => {
 
   console.log('FORM 3 RENDERING');
 
+  // Add the custom MUI DataGrid renderer to the list of renderers
   const renderers = [...materialRenderers, muiDataGridRenderer];
 
   return (

@@ -12,21 +12,30 @@ using Shared;
 
 namespace BaseService;
 
+/// <summary>
+/// Represents the base data model stored in the database
+/// </summary>
 public class BaseData
 {
+    /// <summary>
+    /// The unique identifier of the document
+    /// </summary>
     [JsonIgnore]
     public ObjectId Id { get; set; }
 
+    /// <summary>
+    /// The JSON data serialized as a string
+    /// </summary>
     public string JsonData { get; set; } = string.Empty;
 }
 
 /// <summary>
 /// Handles reading the various JsonForms schema files as well as the event handling
 /// </summary>
-[Export(typeof(ISchemaHandler))]
-[Export(typeof(IEventHandler))]
-[ExportMetadata(nameof(IHandlerData.ExecutionOrder), EventExecutionOrder.BaseService)]
-[ExportMetadata(nameof(IHandlerData.ServiceType), ServiceType.Base)]
+[Export(typeof(ISchemaHandler))] // Export the interface to MEF
+[Export(typeof(IEventHandler))] // Export the interface to MEF
+[ExportMetadata(nameof(IHandlerData.ExecutionOrder), EventExecutionOrder.BaseService)] // Add metadata to the interface for MEF
+[ExportMetadata(nameof(IHandlerData.ServiceType), ServiceType.Base)] // Add metadata to the interface for MEF
 public class SchemaHandler : ISchemaHandler, IEventHandler
 {
     private readonly IMongoCollection<BaseData> _database;

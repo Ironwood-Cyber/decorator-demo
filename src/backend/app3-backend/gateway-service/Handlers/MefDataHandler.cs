@@ -32,12 +32,15 @@ public class MefDataHandler : IDataHandler
         var catalog = new AggregateCatalog();
 
         // Add all directories in the Extensions folder to the catalog
+        // The base services and decorator service build output directories are in the Extensions folder
+        // This is modified in the .csproj files of the services
         List<string> directories = GetAllDirectories(Environment.CurrentDirectory + "/bin/Debug/Extensions");
         directories.ForEach(dir => _logger.LogInformation("Directory: {Dir}", dir));
         directories.ForEach(dir => catalog.Catalogs.Add(new DirectoryCatalog(dir)));
 
         // Create the CompositionContainer with the parts in the catalog
         var container = new CompositionContainer(catalog);
+        // Fill the imports of this object (_schemaHandlers and _eventHandlers) using MEF
         container.ComposeParts(this);
 
         // There must be a single base service in the handlers
@@ -49,9 +52,11 @@ public class MefDataHandler : IDataHandler
 
     public async Task<JObject> GetDataAsync()
     {
+        // Get the data from the base service first
         var baseService = _schemaHandlers.Single(s => s.Metadata.ServiceType == ServiceType.Base);
         JObject result = JObject.Parse(await baseService.Value.GetDataAsStringAsync());
 
+        // Get the data from the decorator services and merge it with the base service data
         foreach (var schemaHandler in _schemaHandlers.Where(s => s.Metadata.ServiceType == ServiceType.Decorator))
         {
             try
@@ -74,9 +79,11 @@ public class MefDataHandler : IDataHandler
 
     public async Task<JObject> GetSchemaAsync()
     {
+        // Get the schema from the base service first
         var baseService = _schemaHandlers.Single(s => s.Metadata.ServiceType == ServiceType.Base);
         JObject result = JObject.Parse(await baseService.Value.GetSchemaAsStringAsync());
 
+        // Get the schema from the decorator services and merge it with the base service schema
         foreach (var schemaHandler in _schemaHandlers.Where(s => s.Metadata.ServiceType == ServiceType.Decorator))
         {
             try
@@ -99,9 +106,11 @@ public class MefDataHandler : IDataHandler
 
     public async Task<JObject> GetUiSchemaAsync()
     {
+        // Get the UI schema from the base service first
         var baseService = _schemaHandlers.Single(s => s.Metadata.ServiceType == ServiceType.Base);
         JObject result = JObject.Parse(await baseService.Value.GetUiSchemaAsStringAsync());
 
+        // Get the UI schema from the decorator services and merge it with the base service UI schema
         foreach (var schemaHandler in _schemaHandlers.Where(s => s.Metadata.ServiceType == ServiceType.Decorator))
         {
             try
@@ -126,6 +135,7 @@ public class MefDataHandler : IDataHandler
             }
         }
 
+        // Sort the UI schema by id
         result!.SortJsonById();
         return result!;
     }
@@ -273,6 +283,11 @@ public class MefDataHandler : IDataHandler
         return null;
     }
 
+    /// <summary>
+    /// Get all directories in the root path
+    /// </summary>
+    /// <param name="rootPath">A directory path</param>
+    /// <returns>A list of strings containing the paths to all directories within a root directory</returns>
     private List<string> GetAllDirectories(string rootPath)
     {
         List<string> directories = [];

@@ -23,10 +23,10 @@ public class BaseData
 /// <summary>
 /// Handles reading the various JsonForms schema files as well as the event handling
 /// </summary>
-[Export(typeof(ISchemaHandler))]
-[Export(typeof(IEventHandler))]
-[ExportMetadata(nameof(IHandlerData.ExecutionOrder), EventExecutionOrder.OverrideBaseService)]
-[ExportMetadata(nameof(IHandlerData.ServiceType), ServiceType.Decorator)]
+[Export(typeof(ISchemaHandler))] // Export the interface to MEF
+[Export(typeof(IEventHandler))] // Export the interface to MEF
+[ExportMetadata(nameof(IHandlerData.ExecutionOrder), EventExecutionOrder.OverrideBaseService)] // Add metadata to the interface for MEF
+[ExportMetadata(nameof(IHandlerData.ServiceType), ServiceType.Decorator)] // Add metadata to the interface for MEF
 public class SchemaHandler : ISchemaHandler, IEventHandler
 {
     private readonly IMongoCollection<BaseData> _database;

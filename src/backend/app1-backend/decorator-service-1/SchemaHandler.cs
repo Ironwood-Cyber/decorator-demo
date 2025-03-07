@@ -9,9 +9,9 @@ namespace DecoratorService1;
 /// <summary>
 /// Handles reading the various JsonForms schema files
 /// </summary>
-[Export(typeof(ISchemaHandler))]
-[ExportMetadata(nameof(IHandlerData.ExecutionOrder), EventExecutionOrder.None)]
-[ExportMetadata(nameof(IHandlerData.ServiceType), ServiceType.Decorator)]
+[Export(typeof(ISchemaHandler))] // Export the interface to MEF
+[ExportMetadata(nameof(IHandlerData.ExecutionOrder), EventExecutionOrder.None)] // Add metadata to the interface for MEF
+[ExportMetadata(nameof(IHandlerData.ServiceType), ServiceType.Decorator)] // Add metadata to the interface for MEF
 public class SchemaHandler : ISchemaHandler
 {
     /// <inheritdoc/>

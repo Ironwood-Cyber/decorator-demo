@@ -11,10 +11,10 @@ namespace BaseService;
 /// <summary>
 /// Handles reading the various JsonForms schema files as well as the event handling
 /// </summary>
-[Export(typeof(ISchemaHandler))]
-[Export(typeof(IEventHandler))]
-[ExportMetadata(nameof(IHandlerData.ExecutionOrder), EventExecutionOrder.BaseService)]
-[ExportMetadata(nameof(IHandlerData.ServiceType), ServiceType.Base)]
+[Export(typeof(ISchemaHandler))] // Export the interface to MEF
+[Export(typeof(IEventHandler))] // Export the interface to MEF
+[ExportMetadata(nameof(IHandlerData.ExecutionOrder), EventExecutionOrder.BaseService)] // Add metadata to the interface for MEF
+[ExportMetadata(nameof(IHandlerData.ServiceType), ServiceType.Base)] // Add metadata to the interface for MEF
 public class SchemaHandler : ISchemaHandler, IEventHandler
 {
     /// <inheritdoc/>

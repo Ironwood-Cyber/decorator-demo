@@ -7,6 +7,9 @@ using Newtonsoft.Json.Linq;
 using Shared;
 using static System.Net.Mime.MediaTypeNames;
 
+// This file is the entry point for the application. It sets up the application's services and endpoints.
+// Only used when running the application as a standalone service for the service-based implementation.
+
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();

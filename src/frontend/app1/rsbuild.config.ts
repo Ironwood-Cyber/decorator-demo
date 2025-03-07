@@ -4,6 +4,8 @@ import { pluginModuleFederation } from '@module-federation/rsbuild-plugin';
 
 import pkg from './package.json';
 
+// Documentation: https://module-federation.io/guide/start/quick-start.html
+
 export default defineConfig({
   plugins: [
     pluginReact(),
@@ -13,7 +15,7 @@ export default defineConfig({
         './Form': './src/Form.tsx',
       },
       shared: {
-        ...pkg['dependencies'],
+        ...pkg['dependencies'], // This will share all dependencies from package.json
         react: {
           singleton: true,
           requiredVersion: pkg['dependencies']['react'],
